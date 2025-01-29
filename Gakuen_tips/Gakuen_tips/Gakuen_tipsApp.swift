@@ -11,7 +11,7 @@ import SwiftUI
 struct Gakuen_tipsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TitleView()
         }
     }
 }
