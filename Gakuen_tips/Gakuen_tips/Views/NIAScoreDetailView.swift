@@ -72,7 +72,7 @@ final class NIAScoreViewState: ObservableObject {
             if score < 0 {
                 continue
             }
-            switch stages[i].parameterType {
+            switch stages[i - 1].parameterType {
             case .VOCAL:
                 stages[i].vocalScore = score
                 stages[i].danceScore = 0
@@ -123,6 +123,7 @@ struct NIAScoreDetailView: View {
         self.second = second
         self.third = third
 
+        // 最終3ターンは得意ステータスから固定する
         self.viewState.setLastStageParameterType(
             first: first,
             second: second,
@@ -227,7 +228,11 @@ struct NIAScoreDetailView: View {
                         
                         // 得意ステータス
                         let inputParameter = $inputParameters[12 - stage.remainTurn.wrappedValue]
-                        if stage.remainTurn.wrappedValue != 0 {
+                        if 1...3 ~= stage.remainTurn.wrappedValue {
+                            // 残り1~3ターンの場合は固定なので文字列のみ表示する
+                            Text(stage.wrappedValue.parameterType.rawValue)
+                                .frame(width: CGFloat(Double(width) * 0.3), height:24)
+                        } else if stage.remainTurn.wrappedValue != 0 {
                             Picker(selection: inputParameter, label: Text("Select a paint color")) {
                                 ForEach(ParameterType.allCases, id: \.self) {
                                     Text($0.rawValue)
@@ -238,7 +243,8 @@ struct NIAScoreDetailView: View {
                                 print("得意ステータス")
                                 viewState.updateParameter(
                                     remainTurn: stage.remainTurn.wrappedValue,
-                                    parameter: inputParameter.wrappedValue)
+                                    parameter: inputParameter.wrappedValue
+                                )
                             }
                             .pickerStyle(.menu)
                             .frame(width: CGFloat(Double(width) * 0.3), height:24)
@@ -251,17 +257,23 @@ struct NIAScoreDetailView: View {
                         
                         // 開始スコア
                         let inputScore = $inputScores[12 - stage.remainTurn.wrappedValue]
-                        TextField("Int", value: inputScore, format: .number)
-                            .onChange(of: inputScore.wrappedValue) {
-                                // 開始スコアを更新したら合計点を更新する
-                                print("開始スコア")
-                                viewState.updateScore(
-                                    remainTurn: stage.remainTurn.wrappedValue,
-                                    score: inputScore.wrappedValue
-                                )
-                            }
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: CGFloat(Double(width) * 0.2))
+                        if stage.remainTurn.wrappedValue != 12 {
+                            TextField("Int", value: inputScore, format: .number)
+                                .onChange(of: inputScore.wrappedValue) {
+                                    // 開始スコアを更新したら合計点を更新する
+                                    print("開始スコア")
+                                    viewState.updateScore(
+                                        remainTurn: stage.remainTurn.wrappedValue,
+                                        score: inputScore.wrappedValue
+                                    )
+                                }
+                                .textFieldStyle(.roundedBorder)
+                                .keyboardType(.numberPad)
+                                .frame(width: CGFloat(Double(width) * 0.2))
+                        } else {
+                            Text("0")
+                                .frame(width: CGFloat(Double(width) * 0.2))
+                        }
 
                         Spacer()
                     }
