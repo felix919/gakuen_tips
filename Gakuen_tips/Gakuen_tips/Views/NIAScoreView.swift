@@ -48,7 +48,7 @@ struct NIAScoreView: View {
             
             
             NavigationLink {
-                NIAScoreDetailView(
+                NIAScoreDetailView.init(
                     first: first, second: sencond, third: third
                 )
             } label: {
@@ -67,6 +67,17 @@ enum ParameterType: String, CaseIterable {
     case VOCAL = "Vocal"
     case DANCE = "Dance"
     case VISUAL = "Visual"
+    
+    func getColor() -> Color {
+        switch self {
+        case .VOCAL:
+            return Color(.vocal)
+        case .DANCE:
+            return Color(.dance)
+        case .VISUAL:
+            return Color(.visual)
+        }
+    }
 }
 
 #Preview {
