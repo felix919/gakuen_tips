@@ -66,7 +66,7 @@ final class NIAScoreViewState: ObservableObject {
         vocalTotalScore = 0
         danceTotalScore = 0
         visualTotalScore = 0
-        for i in 1..<stages.count - 1 {
+        for i in 1..<stages.count {
             // パラメータの点数を計算する
             let score = stages[i].startScore - stages[i - 1].startScore
             if score < 0 {
